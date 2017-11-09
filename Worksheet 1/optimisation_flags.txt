@@ -1,0 +1,51 @@
+<< GNU Compilers >>
+
+"-march=native” :  “ -march” specifies the compiler how to generate the source code such that it works better for certain types of processor architectures. "-march=“ tells the compiler that it may use the instructions from ISA (industry standard architecture). On Intel platform “-march=native <OPT>” will likely end up using AVX instructions but with shorter SSE XMM registers. To fully support AVX YMM registers, it’s advisable to use -ftree-vectorize or -O3 along with -march=native
+
+use cat /proc/cpuinfo to get the information of your processor architecture
+
+"-fomit-frame-pointer” : omits the storing of stack frame pointers during function calls if the function does not require one. Often this is not necessary for simple functions but may be beneficial for complex functions.
+
+"-floop-block” : creates loop blocks to improve cache hits. Block tile sizes can be specified by using loop-block-tile-size parameter (default is 51 iterations). But I’m not sure whether this optimisation is possible with dynamic N
+
+"-floop-interchange” : interchanges the order of nested loops to improve cache hits. Particularly useful when N is larger than the cache line. Again, not sure whether this is possible when N is dynamic
+
+"-floop-strip-mine” : converts a single loop into a nested loop such that it’s formed into blocks. Particularly useful for vectorisation and memory access when the strip size is bounded by AVX size and/or cache line.
+
+"-funroll-loops” : unrolls loops whose number of iterations can be determined at compile time or upon entry to the loop. Improves pipelining, and possibly locality
+
+"-flto” : This option runs the standard link-time optimizer. When invoked with source code, it generates GIMPLE (one of GCC’s internal representations) and writes it to special ELF sections in the object file. When the object files are linked together, all the function bodies are read from these ELF sections and instantiated as if they had been part of the same translation unit. It may speed up the linking time and hence compile time.
+
+<< Best combination for GNU Compilers >>
+
+1. -march=native : Seems to be beneficial independent from other compiler flags since it generates suitable instruction sets for ISA. It may also optimise AVX usage by combining with -ftree-vectorize. I would use it along with -fomit-frame-pointer to use extra registers.
+
+2. -fomit-frame-pointer : May not necessairly optimise the source code but why not get extra registers free?
+
+3. -flto : Not particularly useful for our benchmark. But for big/complex projects this could be helpful and I don't see how this would be a drawback. I have the impression that using this flag could possibly be a good programming practice.
+
+# The rest of the optimisation flags are loop transformations which are always helpful provided that they don't conflict with each other.
+
+4. -floop-block : Although I am not sure whether LULESH benchmark uses double pointers (i.e. matrices), hence this may not be beneficial for this particular case. But again, I don't see how this would harm memory access for 1D array. 
+
+5. -floop-interchange : Similar to above. But this could be more useful than loop blocking for our benchmark.
+
+6. -floop-strip-mine : Very useful for our benchmark. Its usage along with -march=native and -floop-interchange could improve both memory access and full use of AVX. 
+
+7. -funroll-loops : Very useful for our benchmark. Improves pipelining and doesn't seem to conflict with other loop transformations.
+
+!! Useful ones:
+
+-march=native, -fomit-frame-pointer, -floop-internchange, -floop-strip-mine, -funroll-loops
+
+!! Optional but why not use them ones:
+
+-flto, -floop-block 
+
+<< Intel Compilers >>
+
+"-xHost”: Tells the compiler to generate instructions for the highest instruction set available on the compilation host processor. Intended to generate optimised instruction sets for Intel microprocessors, and although it may (or may not, depending on the host processor - summary table available from Intel website) work on non-Intel microprocessors, it may or may not optimise the instruction sets to the same degree as it would on Intel microprocessors. This is somewhat similar to -march=native but tailored to Intel processors.
+
+"-unroll”: (i32, i32em only and it’s correct syntax seems to be -unroll<n>). Sets maximum number of times to unroll loops. This applies only to loops that the compiler determines should be unrolled. Omit n to let the compiler decide whether to perform unrolling or not. Use n=0 to disable loop unrolling (-unroll0). Hence the original statements will be present n times within the loop with different indices.
+
+"-ipo”: Interprocedural Optimisation is an automatic, multi-step process that allows the compiler to analyse your code to determine where you can benefit from specific optimisations. Supports both single-file compilation and multi-file compilation. It initially generates mock object files (Intermediate representation of the source code) which can be ten times or more larger than the size of normal object files. It then links these mock object files for final compilation. During this compilation process it must be linked with Intel compilers. This flag seems to be beneficial to program analysis to figure out where optimisation is possible, but I’m not sure whether it actually does the optimisation for you wherever applicable out of the box - Ask the tutor.
