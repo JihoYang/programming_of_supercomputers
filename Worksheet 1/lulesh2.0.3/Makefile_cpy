@@ -8,7 +8,8 @@ LULESH_EXEC = lulesh2.0
 MPI_INC = /usr/include/openmpi/
 MPI_LIB = /usr/lib/
 
-SERCXX = g++ -DUSE_MPI=0
+SERCXX = g++ -DUSE_MPI=0 -fomit-frame-pointer -floop-block -floop-interchange -floop-strip-mine -funroll-loops -flto
+#SERCXX = g++ -DUSE_MPI=0
 MPICXX = mpig++ -DUSE_MPI=1
 #CXX = $(MPICXX)
 CXX = $(SERCXX)
@@ -26,8 +27,9 @@ OBJECTS2.0 = $(SOURCES2.0:.cc=.o)
 #LDFLAGS = -g -O3 -fopenmp
 
 #Below are reasonable default flags for a serial build
-CXXFLAGS = -g -O3 -I. -Wall -march=native -fomit-frame-pointer -floop-strip-mine -funroll-loops -floop-interchange -floop-block
-LDFLAGS = -g -O3 -march=native -fomit-frame-pointer -floop-strip-mine -funroll-loops -floop-interchange -floop-block
+CXXFLAGS = -g -O3 -I. -Wall -fomit-frame-pointer -floop-block -floop-interchange -floop-strip-mine -funroll-loops -flto
+#CXXFLAGS = -g -O3 -I. -Wall
+LDFLAGS = -g -O3 -Wall -fomit-frame-pointer -floop-block -floop-interchange -floop-strip-mine -funroll-loops -flto
 
 #common places you might find silo on the Livermore machines.
 #SILO_INCDIR = /opt/local/include

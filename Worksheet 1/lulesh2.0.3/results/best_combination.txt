@@ -1,0 +1,12 @@
+
+<GNU COMPILERS>
+
+-march=native -fomit-frame-pointer -floop-strip-mine -funroll-loops -floop-interchange -floop-block
+
+without optimisation: 26.66 seconds (average)
+
+with optimisation: took 22.578 seconds (average) 
+
+<Intel COMPILERS>
+
+
