@@ -26,10 +26,8 @@ OBJECTS2.0 = $(SOURCES2.0:.cc=.o)
 #LDFLAGS = -g -O3 -fopenmp
 
 #Below are reasonable default flags for a serial build
-CXXFLAGS = -g -O3 -I. -Wall -march=native -fomit-frame-pointer -floop-strip-mine -funroll-loops -floop-interchange -floop-block
-LDFLAGS = -g -O3 -march=native -fomit-frame-pointer -floop-strip-mine -funroll-loops -floop-interchange -floop-block
-
-#common places you might find silo on the Livermore machines.
+CXXFLAGS = -g -O3 -I. -Wall -march=native -fomit-frame-pointer -floop-strip-mine -funroll-loops -floop-interchange -floop-block -flto
+LDFLAGS = -g -O3 -march=native -fomit-frame-pointer -floop-strip-mine -funroll-loops -floop-interchange -floop-block -flto
 #SILO_INCDIR = /opt/local/include
 #SILO_LIBDIR = /opt/local/lib
 #SILO_INCDIR = ./silo/4.9/1.8.10.1/include
