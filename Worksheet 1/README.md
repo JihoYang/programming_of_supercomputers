@@ -10,7 +10,7 @@
 2. Makefile that contains the best flag combination for Phase 1 node (both gcc and icc)
 3. Makefile that contains the best flag combination for Phase 2 node (both gcc and icc)
 
-## 4.3. Optimization Pragmas (Abraham)
+## 4.3. Optimization Pragmas (Abraham) - DONE
 
 1. Modified source code with the added pragma annotation
 
