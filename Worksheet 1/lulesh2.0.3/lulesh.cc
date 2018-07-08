@@ -1045,7 +1045,8 @@ void CalcHourglassControlForElems(Domain& domain,
       CalcElemVolumeDerivative(pfx, pfy, pfz, x1, y1, z1);
 
       /* load into temporary storage for FB Hour Glass control */
-      for(Index_t ii=0;ii<8;++ii){
+      	#pragma ivdep
+	for(Index_t ii=0;ii<8;++ii){
          Index_t jj=8*i+ii;
 
          dvdx[jj] = pfx[ii];
